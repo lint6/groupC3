@@ -1,18 +1,11 @@
 import os
-
-def create_index(foldername):
-    presetlist = os.listdir("stringer_data")
+def index_gen(str(foldername)):
+    presetlist = os.listdir(foldername)
     n = 0
-    print ('Enter the preset #')
+    file_index = []
+    print (f'Total file found: {len(presetlist)}')
     for i in presetlist:
         print(f'{n} -- {i}')
+        file_index.append(i)
         n += 1
-    n = int(input())
-    with open (f'Data files/{str(presetlist[n])}', 'r') as f:
-        preset = []
-        for line in f:
-            if floatcheck(line):
-                line = line.strip('\n')
-                preset.append(line)
-
     return preset
