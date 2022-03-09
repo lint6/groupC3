@@ -14,7 +14,7 @@ def index_gen(foldername):
         file_index.append(i)
         n += 1
     print (f'Index Finished')
-    return preset
+    return file_index
 
 #Extracting Data from Matlab
 mat = scipy.io.loadmat('S01_MC1_HeadMotion')
