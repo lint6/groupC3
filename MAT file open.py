@@ -16,8 +16,11 @@ def index_gen(foldername):
     print (f'Index Finished')
     return file_index
 
+index = index_gen("Data files")
+index_num = int(input('Which file number would you like?'))
+
 #Extracting Data from Matlab
-mat = scipy.io.loadmat('S01_MC1_HeadMotion')
+mat = scipy.io.loadmat(f'Data files/{index[index_num]}')
 data_raw = mat.pop('motiondata')
 data_trans = np.transpose(data_raw)
 
@@ -63,7 +66,7 @@ class Data:
 #Defining Class
 data = Data(data_trans[0], data_trans[1], data_trans[2], data_trans[3], data_trans[4], data_trans[5], data_trans[6], data_trans[7], data_trans[8])
 
-print(data.X_raw
+print(data.X_raw)
 
 plt.plot(data.Time, data.X_raw)
 plt.show()
