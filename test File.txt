@@ -1,4 +1,0 @@
-Download GitHub desktop if haven't already
-https://desktop.github.com/
-
-use this file to try if commit and fetch is working

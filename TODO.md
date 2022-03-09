@@ -1,1 +1,1 @@
-Merge indexer into file opener once file opener is settled
+Merge indexer.py into file opener once file opener is settled
