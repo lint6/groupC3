@@ -9,7 +9,35 @@ data_trans = np.transpose(data_raw)
 #Scaling the values
 #Time column
 data_trans[0] = data_trans[0] - data_trans[0][0]
-data_trans[0] = data_trans[0] / 1000
+data_trans[0] = data_trans[0] / 10000
+
+#xdotdot
+#Framesignature
+
+#Roll raw #Pitch_raw and Yaw Raw
+running = True
+k = 3
+while running:
+    data_trans[k] = (data_trans[k]*180)/16383
+    if k == 5:
+        running = False
+    k = k + 1
+
+#X_raw, Y_raw and Z_raw
+running = True
+k = 6
+while running:
+    data_trans[k] = (data_trans[k]*180)/16383
+    if k == 8:
+        running = False
+    k = k + 1
+
+
+
+
+#test = -458.286
+#test = (test*180)/16383
+#print(test)
 
 
 #Class setup
@@ -29,7 +57,8 @@ class Data:
 data = Data(data_trans[0], data_trans[1], data_trans[2], data_trans[3], data_trans[4], data_trans[5], data_trans[6], data_trans[7], data_trans[8])
 
 
-print(data.Time)
+print(data.Z_raw)
+
 
 
 
