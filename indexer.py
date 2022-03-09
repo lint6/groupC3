@@ -1,5 +1,5 @@
 import os
-def index_gen(str(foldername)):
+def index_gen(foldername):
     presetlist = os.listdir(foldername)
     n = 0
     file_index = []
