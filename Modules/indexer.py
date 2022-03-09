@@ -8,4 +8,5 @@ def index_gen(str(foldername)):
         print(f'{n} -- {i}')
         file_index.append(i)
         n += 1
+    print (f'Index Finished')
     return preset
