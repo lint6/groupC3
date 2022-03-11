@@ -23,7 +23,7 @@ index_num = int(input('Which file number would you like?'))
 #Extracting Data from Matlab
 mat = sio.loadmat(f'Data files/{index[index_num]}')
 
-def fun_DataFormat(mat):
+def fun_data_format(mat):
     data_raw = mat.pop('motiondata')
     data_trans = np.transpose(data_raw)
     #Scaling the values
