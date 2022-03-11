@@ -1,10 +1,10 @@
-import scipy.io as sio
+import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 
 #Functions
-def fun_Index_Gen(foldername):
+def index_gen(foldername):
     presetlist = os.listdir(foldername)
     n = 0
     file_index = []
@@ -16,39 +16,39 @@ def fun_Index_Gen(foldername):
     print (f'Index Finished')
     return file_index
 
-index = fun_Index_Gen("Data files")
+index = index_gen("Data files")
 index_num = int(input('Which file number would you like?'))
 
 #Extracting Data from Matlab
-mat = sio.loadmat(f'Data files/{index[index_num]}')
+mat = scipy.io.loadmat(f'Data files/{index[index_num]}')
+data_raw = mat.pop('motiondata')
+data_trans = np.transpose(data_raw)
 
-def fun_DataFormat(mat):
-    data_raw = mat.pop('motiondata')
-    data_trans = np.transpose(data_raw)
-    #Scaling the values
-    #Time column
-    data_trans[0] = data_trans[0] - data_trans[0][0]
-    data_trans[0] = data_trans[0] / 10000
+#Scaling the values
+#Time column
+data_trans[0] = data_trans[0] - data_trans[0][0]
+data_trans[0] = data_trans[0] / 10000
 
+#xdotdot
+#Framesignature
 
-    #Roll raw #Pitch_raw and Yaw Raw
-    running = True
-    k = 3
-    while running:
-        data_trans[k] = (data_trans[k]*180)/16383
-        if k == 5:
-            running = False
-        k = k + 1
+#Roll raw #Pitch_raw and Yaw Raw
+running = True
+k = 3
+while running:
+    data_trans[k] = (data_trans[k]*180)/16383
+    if k == 5:
+        running = False
+    k = k + 1
 
-    #X_raw, Y_raw and Z_raw
-    running = True
-    k = 6
-    while running:
-        data_trans[k] = (data_trans[k]*180)/16383
-        if k == 8:
-            running = False
-        k = k + 1
-    return data_trans
+#X_raw, Y_raw and Z_raw
+running = True
+k = 6
+while running:
+    data_trans[k] = (data_trans[k]*180)/16383
+    if k == 8:
+        running = False
+    k = k + 1
 
 #Class setup
 class Data:
@@ -64,15 +64,13 @@ class Data:
         self.Z_raw = Z_raw
 
 #Defining Class
-FormattedData = fun_DataFormat(mat)
-data = Data(FormattedData[0], FormattedData[1], FormattedData[2], FormattedData[3], FormattedData[4], FormattedData[5], FormattedData[6], FormattedData[7], FormattedData[8])
+data = Data(data_trans[0], data_trans[1], data_trans[2], data_trans[3], data_trans[4], data_trans[5], data_trans[6], data_trans[7], data_trans[8])
 
+print(data.X_raw)
 
-#Plotting Data
-#give in the two things you want to plot
-variable1 = data.Time
-variable2 = data.Pitch_raw
-
-plt.plot(variable1, variable2)
+plt.plot(data.Time, data.X_raw)
 plt.show()
 
+
+
+#test
