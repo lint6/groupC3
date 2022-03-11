@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+"""contain function for importing data"""
 #Functions
 def fun_Index_Gen(foldername):
     presetlist = os.listdir(foldername)
@@ -75,4 +76,3 @@ variable2 = data.Pitch_raw
 
 plt.plot(variable1, variable2)
 plt.show()
-
