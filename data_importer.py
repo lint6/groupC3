@@ -65,7 +65,7 @@ class Data:
         self.Z_raw = Z_raw
 
 #Defining Class
-FormattedData = fun_DataFormat(mat)
+FormattedData = fun_data_format(mat)
 data = Data(FormattedData[0], FormattedData[1], FormattedData[2], FormattedData[3], FormattedData[4], FormattedData[5], FormattedData[6], FormattedData[7], FormattedData[8])
 
 
