@@ -19,11 +19,11 @@ def fun_Index_Gen(foldername):
     print (f'Index Finished')
     return file_index
 
-index = fun_Index_Gen("Data files")
-index_num = int(input('Which file number would you like?'))
+#index = fun_Index_Gen("Data files")
+#index_num = int(input('Which file number would you like?'))
 
 #Extracting Data from Matlab
-mat = sio.loadmat(f'Data files/{index[index_num]}')
+#mat = sio.loadmat(f'Data files/{index[index_num]}')
 
 def fun_data_format(mat):
     data_raw = mat.pop('motiondata')
@@ -67,14 +67,14 @@ class Data:
         self.Z_raw = Z_raw
 
 #Defining Class
-FormattedData = fun_data_format(mat)
-data = Data(FormattedData[0], FormattedData[1], FormattedData[2], FormattedData[3], FormattedData[4], FormattedData[5], FormattedData[6], FormattedData[7], FormattedData[8])
+#FormattedData = fun_data_format(mat)
+#data = Data(FormattedData[0], FormattedData[1], FormattedData[2], FormattedData[3], FormattedData[4], FormattedData[5], FormattedData[6], FormattedData[7], FormattedData[8])
 
 
 #Plotting Data
 #give in the two things you want to plot
-variable1 = data.Time
-variable2 = data.Pitch_raw
+#variable1 = data.Time
+#variable2 = data.Pitch_raw
 
-plt.plot(variable1, variable2)
-plt.show()
+#plt.plot(variable1, variable2)
+#plt.show()
