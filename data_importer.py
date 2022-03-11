@@ -1,3 +1,5 @@
+#This file will extract the code from the MAT files and put in python. It also has functions to fully format the code.
+
 import scipy.io as sio
 import numpy as np
 import matplotlib.pyplot as plt
