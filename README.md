@@ -10,14 +10,16 @@ Two folder is present in this repository:
 
 -Data files
 
-    contain data files we have to analyze, this shouldn't need any further changes since all data files are already located within.
+    contain the data files we have to analyze, this shouldn't need any further changes since all data files are already located within.
 
 ====GitHub Notices====
 
 To fetch or commit, make sure you have desktop version of GitHub (https://desktop.github.com/).
 
-DO NOT create a new branch. If prompt'd, just merge to 'main'
+DO NOT create a new branch. If prompt, just merge to 'main'
 
 ALWAYS make sure you have the latest version of the repository before making any change to avoid issues.
 
 ALWAYS remember to commit and push any changes you made
+
+try not to edit the save file at same time as another user, it causes issues
