@@ -4,6 +4,7 @@ import scipy.io as sio
 
 def data_accuracy_checker(array_in):
     array_in = np.delete(array_in, [0,], 0)
+    print(type(array_in[0][0]))
     print(array_in)
 
 
