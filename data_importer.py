@@ -1,3 +1,5 @@
+#This file will extract the code from the MAT files and put in python. It also has functions to fully format the code.
+
 import scipy.io as sio
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,11 +19,17 @@ def fun_Index_Gen(foldername):
     print (f'Index Finished')
     return file_index
 
-#index = fun_Index_Gen("Data files")
+index = fun_Index_Gen("Data files")
 #index_num = int(input('Which file number would you like?'))
 
 #Extracting Data from Matlab
 #mat = sio.loadmat(f'Data files/{index[index_num]}')
+
+def fun_GetDataRaw(index_num):
+    mat = sio.loadmat(f'Data files/{index[index_num]}')
+    data_raw = mat.pop('motiondata')
+    data_trans = np.transpose(data_raw)
+    return data_trans
 
 def fun_data_format(mat):
     data_raw = mat.pop('motiondata')
