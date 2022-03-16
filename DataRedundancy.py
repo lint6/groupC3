@@ -47,4 +47,11 @@ def fun_FullBigArrayCheck(i=3 , j=3):
 TOTAL_ARRAY_CHECK = fun_FullBigArrayCheck()
 print (TOTAL_ARRAY_CHECK)
 
-#def fun_CheckWithinArrays(i = 0, j = 0):
+def fun_CheckWithinArrays():
+    index_num = i
+    DataArray = data_importer.fun_GetDataRaw(index_num)
+    Row1 = 
+
+
+
+
