@@ -5,14 +5,14 @@ import scipy.io as sio
 def rewriter(array_in, index_num):
     global index
     #print(array_in)
-    #print(np.shape(array_in))
-    with open (f'csv_data/{index[index_num]}.csv',"w") as f:
-        f.write("")
-    with open (f'csv_data/{index[index_num]}.csv', 'a') as f:
-        for i in range(len(array_in[0])):
-            f.write(f'{array_in[6][i]},{array_in[7][i]},{array_in[8][i]},{array_in[3][i]},{array_in[4][i]},{array_in[5][i]}')
-            #x, y, z, roll, pitch, yaw
-            f.write("\n")
+    print(np.shape(array_in))
+    #with open (f'csv_data/{index[index_num]}.csv',"w") as f:
+    #    f.write("")
+    #with open (f'csv_data/{index[index_num]}.csv', 'a') as f:
+    #    for i in range(len(array_in[0])):
+    #        f.write(f'{array_in[6][i]},{array_in[7][i]},{array_in[8][i]},{array_in[3][i]},{array_in[4][i]},{array_in[5][i]}')
+    #        #x, y, z, roll, pitch, yaw
+    #        f.write("\n")
     print('done')
 
 index = data_importer.fun_Index_Gen("Data files")
