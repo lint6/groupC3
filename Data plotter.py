@@ -87,14 +87,14 @@ z_coor = data.Z_raw
 
 #subplot creation
 figure, axis = plt.subplots(2, 1)
-  
+
 # scatter plots for angles
 axis[0].scatter(time, roll, s=0.2, label='roll')
 axis[0].scatter(time, pitch, s=0.2, label='pitch')
 axis[0].scatter(time, yaw, s=0.2, label='yaw')
 axis[0].set_title("Angles")
 axis[0].legend()
-  
+
 # scatter plots for coordinates
 axis[1].scatter(time, x_coor, s=0.2, label='x')
 axis[1].scatter(time, y_coor, s=0.2, label='y')
@@ -103,6 +103,3 @@ axis[1].set_title("Coordinates")
 axis[1].legend()
 
 plt.show()
-
-
-

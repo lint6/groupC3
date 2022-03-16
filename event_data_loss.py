@@ -10,7 +10,7 @@ def fun_hole_checker(array_in, length):
 
     if len(hole_array) != length:
         raise ValueError('Length of the array is shorter than expacted, missing data detected')
-    hole_array = np.nonzero(hole_array) # find location of all zero value within array_in
+    hole_array = np.nonzero(hole_array) # find location of all nonzero value within array_in
     hole_array = np.array(hole_array).transpose()
     if hole_array.any() != 0:
         print("hole found, location printed")
