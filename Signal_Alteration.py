@@ -5,7 +5,7 @@ SIGNAL ALTERATION
 """
 
 # Loading one of the documents
-mat = sio.loadmat(f'Data files/S06_MC1_HeadMotion.mat')
+mat = sio.loadmat(f'Data files/S09_MC1_HeadMotion.mat')
 data_raw = mat.pop('motiondata')
 data_trans = np.transpose(data_raw)
 
@@ -33,6 +33,7 @@ def fun_alteration_row(data_trans):
         Negative_Index = np.where(Signs == -1)[0]
 
         Data_Index = []
+
         Change_Min = 0.01
 
         # Runs over all negative indexes to see if they are adjacent
@@ -80,7 +81,7 @@ def fun_alteration_row(data_trans):
 
 def fun_alteration_column(data_trans):
     Expected_Array = np.empty((len(data_trans), len(data_trans[0]) - 2))
-    print(data_trans)
+
     for i in range(len(data_trans)):
         # Puts a zero after/before the data array
         data = data_trans[i]
@@ -91,40 +92,67 @@ def fun_alteration_column(data_trans):
         Expected_Data = Expected_Data[2:-2]
         Expected_Array[i] = Expected_Data
 
-    print(Expected_Array)
-
     Idx_array = []
-    min_change = 0.001
-    min_difference = 0.1
 
-    for col1 in range(len(data_trans)):
+    min_change = 0.05
+    min_difference = 1
+    min_overlap = 0.02
+
+    for col1 in range(1, len(data_trans)):
         for col2 in range(col1 + 1, len(data_trans)):
-                Expected1_min_Data1 = abs(Expected_Array[col1] - data_trans[col1][1:-1])
-                Idx_Expected1_min_Data1 = np.where(Expected1_min_Data1 > min_change)[0]
+            Expected1_min_Data1 = abs(Expected_Array[col1] - data_trans[col1][1:-1])
+            Idx_Expected1_min_Data1 = np.where(Expected1_min_Data1 > min_change)[0]
 
-                Expected2_min_Data2 = abs(Expected_Array[col2] - data_trans[col2][1:-1])
-                Idx_Expected2_min_Data2 = np.where(Expected2_min_Data2 > min_change)[0]
+            Expected2_min_Data2 = abs(Expected_Array[col2] - data_trans[col2][1:-1])
+            Idx_Expected2_min_Data2 = np.where(Expected2_min_Data2 > min_change)[0]
 
-                Expected1_min_Data2 = abs(Expected_Array[col1] - data_trans[col2][1:-1])
-                Idx_Expected1_min_Data2 = np.where(Expected1_min_Data2 < min_difference)[0]
+            Expected1_min_Data2 = abs(Expected_Array[col1] - data_trans[col2][1:-1])
+            Idx_Expected1_min_Data2 = np.where(Expected1_min_Data2 < min_difference)[0]
 
-                Expected2_min_Data1 = abs(Expected_Array[col2] - data_trans[col1][1:-1])
-                Idx_Expected2_min_Data1 = np.where(Expected2_min_Data1 < min_difference)[0]
+            Expected2_min_Data1 = abs(Expected_Array[col2] - data_trans[col1][1:-1])
+            Idx_Expected2_min_Data1 = np.where(Expected2_min_Data1 < min_difference)[0]
 
-                Idx_list = []
-                for Idx11 in Idx_Expected1_min_Data1:
-                    # for Idx22 in Idx_Expected2_min_Data2:
-                    #     for Idx12 in Idx_Expected1_min_Data2:
-                    #         for Idx21 in Idx_Expected2_min_Data1:
-                    if Idx11 in Idx_Expected2_min_Data2 \
-                            and Idx11 in Idx_Expected1_min_Data2 \
-                            and Idx11 in Idx_Expected2_min_Data1 \
-                            and abs(data_trans[col1][Idx11+1] - data_trans[col2][Idx11+1]) > 0.05:
-                        Idx_list.append([Idx11 + 1, col1, col2])
+            Data1_min_Data2 = abs(data_trans[col1][1:-1] - data_trans[col2][1:-1])
+            Idx_Data1_min_Data2 = np.where(Data1_min_Data2 > min_overlap)[0]
 
-                print(col1, col2)
+            # Add arrays together and sorts them
+            Sorted_Array = np.sort(np.concatenate((Idx_Expected1_min_Data1, Idx_Expected2_min_Data2,
+                                                   Idx_Expected2_min_Data1, Idx_Expected1_min_Data2,
+                                                   Idx_Data1_min_Data2)))
 
-                Idx_array.append(Idx_list)
+            # Splits array in sub arrays where each element has the same value
+            # Example: [1,1,2,5,5,5,7,7] --> [ [1,1] , [2] , [5,5,5] , [7,7] ]
+            Splitted_Array = np.array(np.split(Sorted_Array, np.where(np.diff(Sorted_Array) != 0)[0] + 1),
+                                      dtype="object")
+
+            # Creates output array (Four_Times_Present_Array)
+            # that is '1' when a sub array has length four.
+            # Or '0' when it is not four in length.
+            fun_length_checker = np.vectorize(len)
+            Length_Array = fun_length_checker(Splitted_Array)
+            Four_Times_Present_Array = np.where(Length_Array == 5, 1, 0)
+
+            # Array that is '1' whenever a new value compared to previous appears
+            # Example: [1,3,3,3,5,5]
+            #     '--> [1,1,0,0,1,0]
+            Pinpoint_Array = np.where(np.concatenate((np.array([1]), np.diff(Sorted_Array))) > 0, 1, 0)
+
+            # Smushes everything together
+            # Result: An array where every value that appears in all four
+            # input arrays is once in this array. Also, a bunch of zeroes
+            Zeroed_Array = np.concatenate(Four_Times_Present_Array * Splitted_Array) * Pinpoint_Array
+
+            Zero_Eliminated_Array = Zeroed_Array[Zeroed_Array != 0]
+
+            Idx_list = []
+            for idx in Zero_Eliminated_Array:
+                Idx_list.append([idx + 1, col1, col2])
+
+            print(f"col{col1}, col{col2}")
+            # print(np.array(Idx_list))
+            print("Zero_Eliminated_Array:\n", Idx_list)
+
+            Idx_array.append(Idx_list)
 
     print(Idx_array)
     for i in range(len(Idx_array)):
@@ -134,14 +162,16 @@ def fun_alteration_column(data_trans):
             col2 = Idx_array[i][j][2]
             print(data_trans[col1][idx - 1], data_trans[col1][idx], data_trans[col1][idx + 1])
             print(data_trans[col2][idx - 1], data_trans[col2][idx], data_trans[col2][idx + 1])
+            print("Difference: ", round(abs(data_trans[col1][idx] - data_trans[col2][idx]), 4))
             print("")
+
 
 # fun_alteration_row(data_trans)
 
-test_array = np.array(
-    [[1, 2, 3, 4, 12, 6, 7],
-    [8, 9, 10, 11, 5, 13, 14]])
 
+test_array = np.array([[1, 2, 3, 4, 12, 6, 7],
+                       [8, 9, 10, 11, 5, 13, 14]])
+
+# fun_alteration_column(test_array)
 fun_alteration_column(data_trans)
-
 
