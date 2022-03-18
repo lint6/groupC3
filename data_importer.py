@@ -31,7 +31,8 @@ def fun_GetDataRaw(index_num):
     data_trans = np.transpose(data_raw)
     return data_trans
 
-def fun_data_format(mat):
+
+def fun_DataFormat(mat):
     data_raw = mat.pop('motiondata')
     data_trans = np.transpose(data_raw)
     #Scaling the values
@@ -79,8 +80,23 @@ class Data:
 
 #Plotting Data
 #give in the two things you want to plot
+<<<<<<< Updated upstream
 #variable1 = data.Time
 #variable2 = data.Pitch_raw
 
 #plt.plot(variable1, variable2)
 #plt.show()
+=======
+variable11 = data.Time
+variable12 = data.X_raw
+variable21 = variable11
+variable22 = data.Y_raw
+variable31 = variable11
+variable32 = data.Z_raw
+
+plt.scatter(variable11, variable12, label="X", s=0.2)
+plt.scatter(variable21, variable22, label="Y", s=0.2)
+plt.scatter(variable31, variable32, label="Z", s=0.2)
+plt.legend()
+plt.show()
+>>>>>>> Stashed changes
