@@ -9,7 +9,7 @@ mat = sio.loadmat(f'Data files/S09_MC1_HeadMotion.mat')
 data_raw = mat.pop('motiondata')
 
 
-def fun_alteration_row(data_raw):
+def fun_alteration_row(data_raw, Change_Min):
     data_trans = np.transpose(data_raw)
     Results = []
 
@@ -33,8 +33,6 @@ def fun_alteration_row(data_raw):
         Negative_Index = np.where(Signs == -1)[0]
 
         Data_Index = []
-
-        Change_Min = 0.01
 
         # Runs over all negative indexes to see if they are adjacent
         # If adjacent, there is signal alteration
@@ -193,9 +191,9 @@ def fun_alteration_column(data_raw):
     return Alterations_Column
 
 
-Alterations_Row = fun_alteration_row(data_raw)
+Alterations_Row = fun_alteration_row(data_raw, 0.01)
 
-print(Alterations_Row)
+# print(Alterations_Row)
 
 # test_array = np.array([[1, 2, 3, 4, 12, 6, 7],
 #                        [8, 9, 10, 11, 5, 13, 14]])
