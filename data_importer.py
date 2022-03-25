@@ -19,21 +19,20 @@ def fun_Index_Gen(foldername):
     print (f'Index Finished')
     return file_index
 
-index = fun_Index_Gen("Data files")
+#index = fun_Index_Gen("Data files")
 #index_num = int(input('Which file number would you like?'))
 
 #Extracting Data from Matlab
 #mat = sio.loadmat(f'Data files/{index[index_num]}')
 
 def fun_GetDataRaw(index_num):
+    index = fun_Index_Gen("Data files")
     mat = sio.loadmat(f'Data files/{index[index_num]}')
     data_raw = mat.pop('motiondata')
     data_trans = np.transpose(data_raw)
     return data_trans
 
-def fun_data_format(mat):
-    data_raw = mat.pop('motiondata')
-    data_trans = np.transpose(data_raw)
+def fun_data_format(data_trans):
     #Scaling the values
     #Time column
     data_trans[0] = data_trans[0] - data_trans[0][0]
@@ -53,7 +52,9 @@ def fun_data_format(mat):
     running = True
     k = 6
     while running:
-        data_trans[k] = (data_trans[k]*180)/16383
+        data_trans[k] = (data_trans[k]*0.5)/16383
+        if k == 7:
+            print (data_trans[k])
         if k == 8:
             running = False
         k = k + 1
@@ -80,7 +81,7 @@ class Data:
 #Plotting Data
 #give in the two things you want to plot
 #variable1 = data.Time
-#variable2 = data.Pitch_raw
+#variable2 = data.Y_raw
 
 #plt.plot(variable1, variable2)
 #plt.show()

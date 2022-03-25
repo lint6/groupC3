@@ -50,7 +50,12 @@ print (TOTAL_ARRAY_CHECK)
 def fun_CheckWithinArrays():
     index_num = i
     DataArray = data_importer.fun_GetDataRaw(index_num)
-    Row1 = 
+
+    running = True
+    while running:
+
+
+    Row1 = DataArray[]
 
 
 
