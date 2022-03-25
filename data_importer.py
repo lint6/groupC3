@@ -54,7 +54,8 @@ def fun_data_format(data_trans):
     while running:
         data_trans[k] = (data_trans[k]*0.5)/16383
         if k == 7:
-            print (data_trans[k])
+            pass
+            #print (data_trans[k])
         if k == 8:
             running = False
         k = k + 1
