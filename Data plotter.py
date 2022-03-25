@@ -23,7 +23,7 @@ def fun_Index_Gen(foldername):
     return file_index
 
 index = fun_Index_Gen("Data files")
-index_num = int(input('Which file number would you like?'))
+index_num = int(input('Which file number would you like?\n'))
 
 #Extracting Data from Matlab
 mat_sim = sio.loadmat(f'Data files/{index[index_num]}')
