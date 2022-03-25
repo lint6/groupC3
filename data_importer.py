@@ -19,7 +19,7 @@ def fun_Index_Gen(foldername):
     print (f'Index Finished')
     return file_index
 
-index = fun_Index_Gen("Data files")
+#index = fun_Index_Gen("Data files")
 #index_num = int(input('Which file number would you like?'))
 
 #Extracting Data from Matlab
@@ -54,7 +54,7 @@ def fun_DataFormat(mat):
     running = True
     k = 6
     while running:
-        data_trans[k] = (data_trans[k]*180)/16383
+        data_trans[k] = (data_trans[k]*0.5)/16383
         if k == 8:
             running = False
         k = k + 1
@@ -80,23 +80,23 @@ class Data:
 
 #Plotting Data
 #give in the two things you want to plot
-<<<<<<< Updated upstream
+#<<<<<<< Updated upstream
 #variable1 = data.Time
 #variable2 = data.Pitch_raw
 
 #plt.plot(variable1, variable2)
 #plt.show()
-=======
-variable11 = data.Time
-variable12 = data.X_raw
-variable21 = variable11
-variable22 = data.Y_raw
-variable31 = variable11
-variable32 = data.Z_raw
-
-plt.scatter(variable11, variable12, label="X", s=0.2)
-plt.scatter(variable21, variable22, label="Y", s=0.2)
-plt.scatter(variable31, variable32, label="Z", s=0.2)
-plt.legend()
-plt.show()
->>>>>>> Stashed changes
+# =======
+# variable11 = data.Time
+# variable12 = data.X_raw
+# variable21 = variable11
+# variable22 = data.Y_raw
+# variable31 = variable11
+# variable32 = data.Z_raw
+#
+# plt.scatter(variable11, variable12, label="X", s=0.2)
+# plt.scatter(variable21, variable22, label="Y", s=0.2)
+# plt.scatter(variable31, variable32, label="Z", s=0.2)
+# plt.legend()
+# plt.show()
+# >>>>>>> Stashed changes
