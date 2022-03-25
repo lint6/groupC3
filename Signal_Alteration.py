@@ -9,7 +9,6 @@ mat = sio.loadmat(f'Data files/S09_MC1_HeadMotion.mat')
 data_raw = mat.pop('motiondata')
 
 
-
 def fun_alteration_row(data_raw):
     data_trans = np.transpose(data_raw)
     Results = []

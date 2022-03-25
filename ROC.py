@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 Manual_Test = np.array([[1, 0, 0, 1, 1, 0],
                         [0, 0, 1, 0, 0, 0],
@@ -11,38 +12,37 @@ Algorithm_Test = np.array([[0, 1, 0, 0, 1, 1],
                            [0, 1, 1, 0, 0, 1]])
 
 
-def fun_ROC(Manual, Algorithm):
-    Difference_Array = Manual - Algorithm
+def fun_Rates(Manual, Algorithm):
+    Difference_Array = Manual * 2 - Algorithm
     print(Difference_Array)
-    # DA=0 & Algorithm=1: True positive (Correctly found anomaly)
-    # DA=0 & Algorithm=0: True Negative (Correctly found no anomaly)
-    # DA=1              : False positive (Incorrectly not found anomaly)
-    # DA=-1             : False negative (Incorrectly found anomaly)
-    # TP = np.where(Difference_Array == 0 and Algorithm == 1)
-    # TN = np.where(Difference_Array == 0 and Algorithm == 0)
-    TP = [[]] * len(Algorithm)
-    TN = [[]] * len(Algorithm)
+    # DA=1   : True positive (Correctly found anomaly)
+    # DA=0   : True Negative (Correctly found no anomaly)
+    # DA=-1  : False positive (Incorrectly not found anomaly)
+    # DA=2   : False negative (Incorrectly found anomaly)
 
-    DA_0_coord = np.where(Difference_Array == 0)
-    A_1_coord = np.where(Algorithm == 1)
-    A_0_coord = np.where(Algorithm == 0)
+    TP = len(np.where(Difference_Array == 1)[0])
+    TN = len(np.where(Difference_Array == 0)[0])
+    FP = len(np.where(Difference_Array == -1)[0])
+    FN = len(np.where(Difference_Array == 2)[0])
 
-    DA_0 = np.zeros((len(Algorithm), len(Algorithm[0])))
-    A_1 = np.zeros((len(Algorithm), len(Algorithm[0])))
-    A_0 = np.zeros((len(Algorithm), len(Algorithm[0])))
+    P = TP + FN
+    N = FP + TN
+    PP = TP + FP
+    PN = FN + TN
 
-    for idx in range(len(DA_0_coord[0])):
-        DA_0[DA_0_coord[0][idx]][DA_0_coord[1][idx]] = 1
+    TPR = TP/P  # True Positive Rate or Sensitivity
+    FPR = FP/N  # False Positive Rate or Fall-out
+    FNR = FN/P  # False Negative Rate or Miss rate
+    TNR = TN/N
 
-    FP = len(np.where(Difference_Array == 1)[0])
-    FN = len(np.where(Difference_Array == -1)[0])
-
-    print(DA_0_coord)
-    print(DA_0)
     print(TP)
     print(TN)
     print(FP)
     print(FN)
+
+    return TPR, FPR, FNR, TNR
+
+def fun_ROC
 
 
 fun_ROC(Manual_Test, Algorithm_Test)
