@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.io as sio
+
 """
 SIGNAL ALTERATION
 """
@@ -9,7 +10,7 @@ mat = sio.loadmat(f'Data files/S09_MC1_HeadMotion.mat')
 data_raw = mat.pop('motiondata')
 
 
-def fun_alteration_row(data_raw, Change_Min):
+def fun_alteration_row(data_raw, Change_Min=0.01):
     data_trans = np.transpose(data_raw)
     Results = []
 
@@ -200,4 +201,4 @@ Alterations_Row = fun_alteration_row(data_raw, 0.01)
 # Alterations_Column = fun_alteration_column(test_array)
 Alterations_Column = fun_alteration_column(data_raw)
 
-print(Alterations_Column)
+# print(Alterations_Column)
