@@ -184,9 +184,12 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
     print(np.max(Jaccard))
     print(np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)[0])
     print(Combination_list[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)[0][0]])
+    # X = [0, 0.2, 0.4, 0.6, 0.8, 1]
+    # Y = [0, 0.2, 0.4, 0.6, 0.8, 1]
 
     plt.scatter(FPR, TPR)
     plt.plot(FPR[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)], TPR[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)], marker="o", markerfacecolor="red")
+    # plt.plot(X,Y)
     plt.xlim(0, 1)
     plt.ylim(0, 1)
     plt.xlabel("FPR")

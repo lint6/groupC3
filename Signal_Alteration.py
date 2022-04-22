@@ -48,7 +48,7 @@ def fun_alteration_row(data_raw, Change_Min=0.01):
 
         Results.append(Data_Index)
 
-    # Prints the amount of alterations per column
+    ### Prints the amount of alterations per column
     # for i in range(len(Results)):
     #     print(len(Results[i]))
 
@@ -194,11 +194,11 @@ def fun_alteration_column(data_raw):
 
 Alterations_Row = fun_alteration_row(data_raw, 0.01)
 
-# print(Alterations_Row)
+print(Alterations_Row)
 
 # test_array = np.array([[1, 2, 3, 4, 12, 6, 7],
 #                        [8, 9, 10, 11, 5, 13, 14]])
 # Alterations_Column = fun_alteration_column(test_array)
 Alterations_Column = fun_alteration_column(data_raw)
 
-# print(Alterations_Column)
+print(Alterations_Column)
