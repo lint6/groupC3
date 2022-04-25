@@ -3,6 +3,7 @@ import scipy.io as sio
 
 """
 SIGNAL ALTERATION
+Input files are the raw data
 """
 
 # Loading one of the documents
@@ -10,7 +11,7 @@ mat = sio.loadmat(f'Data files/S09_MC1_HeadMotion.mat')
 data_raw = mat.pop('motiondata')
 
 
-def fun_alteration_row(data_raw, Change_Min=0.01):
+def fun_alteration_row(data_raw, Change_Min=250):
     data_trans = np.transpose(data_raw)
     Results = []
 
@@ -49,8 +50,8 @@ def fun_alteration_row(data_raw, Change_Min=0.01):
         Results.append(Data_Index)
 
     ### Prints the amount of alterations per column
-    # for i in range(len(Results)):
-    #     print(len(Results[i]))
+    for i in range(len(Results)):
+        print(len(Results[i]))
 
     # Creates an array the shape of all data and puts in 1 if there is an alteration
     Alterations_Row = np.zeros((9, len(data_trans[0])))
@@ -80,7 +81,7 @@ def fun_alteration_row(data_raw, Change_Min=0.01):
     return Alterations_Row
 
 
-def fun_alteration_column(data_raw):
+def fun_alteration_column(data_raw, min_change=0.05, min_difference=0.1, min_overlap=0.02):
     data_trans = np.transpose(data_raw)
     Expected_Array = np.empty((len(data_trans), len(data_trans[0]) - 2))
 
@@ -96,10 +97,6 @@ def fun_alteration_column(data_raw):
         Expected_Array[i] = Expected_Data
 
     Idx_array = []
-
-    min_change = 0.05
-    min_difference = 0.1
-    min_overlap = 0.02
 
     # Runs over all combinations of column to cross-check all of them
     # Column 1 (time) is skipped, since it is most likely perfect, and it messed things up
@@ -192,7 +189,7 @@ def fun_alteration_column(data_raw):
     return Alterations_Column
 
 
-Alterations_Row = fun_alteration_row(data_raw, 0.01)
+Alterations_Row = fun_alteration_row(data_raw)
 
 print(Alterations_Row)
 
