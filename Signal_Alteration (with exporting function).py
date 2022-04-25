@@ -82,8 +82,6 @@ def fun_alteration_row(data_raw, Change_Min=0.01):
     # print((Results[idx]))
 
     return Alterations_Row
-
-
 def fun_alteration_column(data_raw):
     data_trans = np.transpose(data_raw)
     Expected_Array = np.empty((len(data_trans), len(data_trans[0]) - 2))
@@ -195,18 +193,19 @@ def fun_alteration_column(data_raw):
 
     return Alterations_Column
 
+col_calc = input('Col Calc? (Y/N)\n').upper()
 for i in range(len(index)):
     if i > 1:
         mat = sio.loadmat(f'Data files/{index[i]}')
         data_raw = mat.pop('motiondata')
 
-        print(f"\n{index[i]}")
-        print(f'Row calc {i -2}/{len(index) -3}')
-        Alterations_Row = fun_alteration_row(data_raw, 250)
+        print(f'\nRow calc {i-2}/{len(index) -3}')
+        Alterations_Row = fun_alteration_row(data_raw, 0.01)
         print('Row calc done')
-        print(f'col calc {i-2}/{len(index) -3}')
-        Alterations_Column = fun_alteration_column(data_raw)
-        print('col calc done')
+        if col_calc == "Y":
+            print(f'col calc {i-2}/{len(index) -3}')
+            Alterations_Column = fun_alteration_column(data_raw)
+            print('col calc done')
         #print(Alterations_Row)
 
         # test_array = np.array([[1, 2, 3, 4, 12, 6, 7],
@@ -219,16 +218,43 @@ for i in range(len(index)):
         col is location across data types direction (0 to 8)
         row is location along time axis direction (0 to about 45000)
         """
-        for i in range(2):
-            if i < 1:
-                col = np.nonzero(Alterations_Column)[0]
-                row = np.nonzero(Alterations_Column)[1]
+        for j in range(2):
+            col = 0
+            row = 0
+            if j < 1:
+                if col_calc == "Y":
+                    col = np.nonzero(Alterations_Column)[0]
+                    row = np.nonzero(Alterations_Column)[1]
             else:
                 col = np.nonzero(Alterations_Row)[0]
                 row = np.nonzero(Alterations_Row)[1]
             coord = np.vstack((col, row)).transpose()
-            if i < 1:
-                print("alteration in time")
+            for k in range(len(coord)):
+                if coord[k][0] == 0 or coord[k][0] == 1 or coord[k][0] == 2:
+                    coord[k][0] = 999
+                if coord[k][0] == 6:
+                    coord[k][0] = 0
+                if coord[k][0] == 7:
+                    coord[k][0] = 1
+                if coord[k][0] == 8:
+                    coord[k][0] = 2
+
+            if j < 1:
+                if col_calc == "Y":
+                    with open(f'extended_data_files/data_alteration_csv/{index[i]}_{j}.csv',"w") as f:
+                        f.write("")
+                    with open (f'extended_data_files/data_alteration_csv/{index[i]}_{j}.csv', 'a') as f:
+                        f.write(f"{index[i]}\n")
+                        f.write("alteration in time (vertical)\n")
+                        for k in range(len(coord)):
+                            f.write(f'{coord[k][0]},{coord[k][1]}')
+                            f.write("\n")
             else:
-                print('alteration between data type')
-            print(coord)
+                with open(f'extended_data_files/data_alteration_csv/{index[i]}_{j}.csv',"w") as f:
+                    f.write("")
+                with open (f'extended_data_files/data_alteration_csv/{index[i]}_{j}.csv', 'a') as f:
+                    f.write(f"{index[i]}\n")
+                    f.write("alteration in data type (horizontal)\n")
+                    for k in range(len(coord)):
+                        f.write(f'{coord[k][0]},{coord[k][1]}')
+                        f.write("\n")
