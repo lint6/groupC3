@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.io as sio
+
 """
 SIGNAL ALTERATION
 """
@@ -7,12 +8,12 @@ SIGNAL ALTERATION
 # Loading one of the documents
 mat = sio.loadmat(f'Data files/S09_MC1_HeadMotion.mat')
 data_raw = mat.pop('motiondata')
-data_trans = np.transpose(data_raw)
-
-Results = []
 
 
-def fun_alteration_row(data_trans):
+def fun_alteration_row(data_raw, Change_Min=0.01):
+    data_trans = np.transpose(data_raw)
+    Results = []
+
     # Runs over all columns of the data
     for i in range(9):
         # Puts a zero after/before the data array
@@ -34,8 +35,6 @@ def fun_alteration_row(data_trans):
 
         Data_Index = []
 
-        Change_Min = 0.01
-
         # Runs over all negative indexes to see if they are adjacent
         # If adjacent, there is signal alteration
         for j in range(len(Negative_Index) - 1):
@@ -49,16 +48,16 @@ def fun_alteration_row(data_trans):
 
         Results.append(Data_Index)
 
-    # Prints the amount of alterations per column
-    for i in range(len(Results)):
-        print(len(Results[i]))
+    ### Prints the amount of alterations per column
+    # for i in range(len(Results)):
+    #     print(len(Results[i]))
 
-    # Creates an array the shape of all data andputs in 1 if there is an alteration
-    Alterations = np.zeros((9, len(data_trans[0])))
+    # Creates an array the shape of all data and puts in 1 if there is an alteration
+    Alterations_Row = np.zeros((9, len(data_trans[0])))
 
     for Data_Type in range(len(Results)):
         for Idx in Results[Data_Type]:
-            Alterations[Data_Type][Idx] = 1
+            Alterations_Row[Data_Type][Idx] = 1
     # print(Alterations)
 
     # idx = int(input("Which dataset do you want to use?:\n"
@@ -78,8 +77,11 @@ def fun_alteration_row(data_trans):
     # print(len(Results[idx]))
     # print((Results[idx]))
 
+    return Alterations_Row
 
-def fun_alteration_column(data_trans):
+
+def fun_alteration_column(data_raw):
+    data_trans = np.transpose(data_raw)
     Expected_Array = np.empty((len(data_trans), len(data_trans[0]) - 2))
 
     for i in range(len(data_trans)):
@@ -88,6 +90,7 @@ def fun_alteration_column(data_trans):
         data__ = np.pad(data, (0, 2), constant_values=0)
         __data = np.pad(data, (2, 0), constant_values=0)
 
+        # Creates array of expected data at all points, based on previous and next point
         Expected_Data = (data__ + __data) * 1/2
         Expected_Data = Expected_Data[2:-2]
         Expected_Array[i] = Expected_Data
@@ -95,23 +98,34 @@ def fun_alteration_column(data_trans):
     Idx_array = []
 
     min_change = 0.05
-    min_difference = 1
+    min_difference = 0.1
     min_overlap = 0.02
 
+    # Runs over all combinations of column to cross-check all of them
+    # Column 1 (time) is skipped, since it is most likely perfect, and it messed things up
     for col1 in range(1, len(data_trans)):
         for col2 in range(col1 + 1, len(data_trans)):
+            # Looks at the difference between the expected data of column 1
+            # And compares it to the real data of column 1
             Expected1_min_Data1 = abs(Expected_Array[col1] - data_trans[col1][1:-1])
             Idx_Expected1_min_Data1 = np.where(Expected1_min_Data1 > min_change)[0]
 
+            # Looks at the difference between the expected data of column 2
+            # And compares it to the real data of column 2
             Expected2_min_Data2 = abs(Expected_Array[col2] - data_trans[col2][1:-1])
             Idx_Expected2_min_Data2 = np.where(Expected2_min_Data2 > min_change)[0]
 
+            # Looks at the difference between the expected data of column 1
+            # And compares it to the real data of column 2
             Expected1_min_Data2 = abs(Expected_Array[col1] - data_trans[col2][1:-1])
             Idx_Expected1_min_Data2 = np.where(Expected1_min_Data2 < min_difference)[0]
 
+            # Looks at the difference between the expected data of column 2
+            # And compares it to the real data of column 1
             Expected2_min_Data1 = abs(Expected_Array[col2] - data_trans[col1][1:-1])
             Idx_Expected2_min_Data1 = np.where(Expected2_min_Data1 < min_difference)[0]
 
+            # Looks at whether the two real data point not just closely overlap at timestamp by coincidence
             Data1_min_Data2 = abs(data_trans[col1][1:-1] - data_trans[col2][1:-1])
             Idx_Data1_min_Data2 = np.where(Data1_min_Data2 > min_overlap)[0]
 
@@ -148,30 +162,43 @@ def fun_alteration_column(data_trans):
             for idx in Zero_Eliminated_Array:
                 Idx_list.append([idx + 1, col1, col2])
 
-            print(f"col{col1}, col{col2}")
-            # print(np.array(Idx_list))
-            print("Zero_Eliminated_Array:\n", Idx_list)
+            # print(f"col{col1}, col{col2}")
+            # print("Zero_Eliminated_Array:\n", Idx_list)
 
             Idx_array.append(Idx_list)
 
-    print(Idx_array)
-    for i in range(len(Idx_array)):
-        for j in range(len(Idx_array[i])):
-            idx = Idx_array[i][j][0]
-            col1 = Idx_array[i][j][1]
-            col2 = Idx_array[i][j][2]
-            print(data_trans[col1][idx - 1], data_trans[col1][idx], data_trans[col1][idx + 1])
-            print(data_trans[col2][idx - 1], data_trans[col2][idx], data_trans[col2][idx + 1])
-            print("Difference: ", round(abs(data_trans[col1][idx] - data_trans[col2][idx]), 4))
-            print("")
+    # Creates an array the shape of all data and puts in 1 if there is an alteration
+    Alterations_Column = np.zeros((len(data_trans), len(data_trans[0])))
+
+    for Data_Type_idx in range(len(Idx_array)):
+        for Alteration_Idx in range(len(Idx_array[Data_Type_idx])):
+            row = Idx_array[Data_Type_idx][Alteration_Idx][0]
+            column1 = Idx_array[Data_Type_idx][Alteration_Idx][1]
+            column2 = Idx_array[Data_Type_idx][Alteration_Idx][2]
+
+            Alterations_Column[column1][row] = 1
+            Alterations_Column[column2][row] = 1
+
+    # for i in range(len(Idx_array)):
+    #     for j in range(len(Idx_array[i])):
+    #         idx = Idx_array[i][j][0]
+    #         col1 = Idx_array[i][j][1]
+    #         col2 = Idx_array[i][j][2]
+    #         print(data_trans[col1][idx - 1], data_trans[col1][idx], data_trans[col1][idx + 1])
+    #         print(data_trans[col2][idx - 1], data_trans[col2][idx], data_trans[col2][idx + 1])
+    #         print("Difference: ", round(abs(data_trans[col1][idx] - data_trans[col2][idx]), 4))
+    #         print("")
+
+    return Alterations_Column
 
 
-# fun_alteration_row(data_trans)
+Alterations_Row = fun_alteration_row(data_raw, 0.01)
 
+print(Alterations_Row)
 
-test_array = np.array([[1, 2, 3, 4, 12, 6, 7],
-                       [8, 9, 10, 11, 5, 13, 14]])
+# test_array = np.array([[1, 2, 3, 4, 12, 6, 7],
+#                        [8, 9, 10, 11, 5, 13, 14]])
+# Alterations_Column = fun_alteration_column(test_array)
+Alterations_Column = fun_alteration_column(data_raw)
 
-# fun_alteration_column(test_array)
-fun_alteration_column(data_trans)
-
+print(Alterations_Column)
