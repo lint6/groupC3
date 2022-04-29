@@ -1,17 +1,18 @@
 import numpy as np
 import scipy.io as sio
-
+#has to run after spike removal?????!!!
 """
 SIGNAL ALTERATION
 Input files are the raw data
 """
 
 # Loading one of the documents
-mat = sio.loadmat(f'Data files/S09_MC1_HeadMotion.mat')
+mat = sio.loadmat(f'Data files/S10_MC1_HeadMotion.mat')
 data_raw = mat.pop('motiondata')
 
+# data_raw = [[0, 1, 0, 0, 1, 1],[1, 1, 0, 0, 1, 1], [1, 1, 1, 1, 1, 1],[0, 1, 1, 0, 0, 1]]
 
-def fun_alteration_row(data_raw, Change_Min=250):
+def fun_alteration_row(data_raw, Change_Min=1000): #treshold
     data_trans = np.transpose(data_raw)
     Results = []
 
@@ -82,7 +83,7 @@ def fun_alteration_row(data_raw, Change_Min=250):
 
 
 def fun_alteration_column(data_raw, min_change=0.05, min_difference=0.1, min_overlap=0.02):
-    data_trans = np.transpose(data_raw)
+    data_trans = np.transpose(data_raw) #9rows 45005 columns
     Expected_Array = np.empty((len(data_trans), len(data_trans[0]) - 2))
 
     for i in range(len(data_trans)):
@@ -188,14 +189,16 @@ def fun_alteration_column(data_raw, min_change=0.05, min_difference=0.1, min_ove
 
     return Alterations_Column
 
-
-Alterations_Row = fun_alteration_row(data_raw)
-
-print(Alterations_Row)
-
 # test_array = np.array([[1, 2, 3, 4, 12, 6, 7],
-#                        [8, 9, 10, 11, 5, 13, 14]])
+#                         [8, 9, 10, 11, 5, 13, 14]])
+Alterations_Row = fun_alteration_row(data_raw)
+# Alterations_Row = fun_alteration_row(test_array)
+
+
+print(np.count_nonzero(Alterations_Row), "Are the amount of signal alterations in the rows")
+
+#
 # Alterations_Column = fun_alteration_column(test_array)
 Alterations_Column = fun_alteration_column(data_raw)
 
-print(Alterations_Column)
+print(np.count_nonzero(Alterations_Column), "Are the amount of signal alterations in the columns")
