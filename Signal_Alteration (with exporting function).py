@@ -200,7 +200,7 @@ for i in range(len(index)):
         data_raw = mat.pop('motiondata')
 
         print(f'\nRow calc {i-2}/{len(index) -3}')
-        Alterations_Row = fun_alteration_row(data_raw, 0.01)
+        Alterations_Row = fun_alteration_row(data_raw, 1000)
         print('Row calc done')
         if col_calc == "Y":
             print(f'col calc {i-2}/{len(index) -3}')
