@@ -4,8 +4,11 @@ import scipy.io as sio
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import math
 
 """contain function for importing data"""
+
+
 #Functions
 def fun_Index_Gen(foldername):
     presetlist = os.listdir(foldername)
@@ -19,14 +22,9 @@ def fun_Index_Gen(foldername):
     print (f'Index Finished')
     return file_index
 
-#index = fun_Index_Gen("Data files")
-#index_num = int(input('Which file number would you like?'))
 
-#Extracting Data from Matlab
-#mat = sio.loadmat(f'Data files/{index[index_num]}')
-
-def fun_GetDataRaw(index_num):
-    index = fun_Index_Gen("Data files")
+def fun_GetDataRaw(index_num, index):
+    # index = fun_Index_Gen("Data files")
     mat = sio.loadmat(f'Data files/{index[index_num]}')
     data_raw = mat.pop('motiondata')
     data_trans = np.transpose(data_raw)
@@ -53,36 +51,156 @@ def fun_data_format(data_trans):
     k = 6
     while running:
         data_trans[k] = (data_trans[k]*0.5)/16383
-        if k == 7:
-            pass
-            #print (data_trans[k])
         if k == 8:
             running = False
         k = k + 1
     return data_trans
 
-#Class setup
-class Data:
-    def __init__(self, Time, xdotdot, FrameSignature, Roll_raw, Pitch_raw, Yaw_raw, X_raw, Y_raw, Z_raw):
-        self.Time = Time
-        self.xdotdot = xdotdot
-        self.FrameSignature = FrameSignature
-        self.Roll_raw = Roll_raw
-        self.Pitch_raw = Pitch_raw
-        self.Yaw_raw = Yaw_raw
-        self.X_raw = X_raw
-        self.Y_raw = Y_raw
-        self.Z_raw = Z_raw
+def fun_FillInFinalProd(FinalProd, TimesToZero, n):
+    m = 0
+    running = True
+    while running:
+        point = int(TimesToZero[m])
+        FinalProd[n][point] = int(0)
+        m = m + 1
+        if m >= len(TimesToZero):
+            running = False
+    return FinalProd
 
-#Defining Class
-#FormattedData = fun_data_format(mat)
-#data = Data(FormattedData[0], FormattedData[1], FormattedData[2], FormattedData[3], FormattedData[4], FormattedData[5], FormattedData[6], FormattedData[7], FormattedData[8])
+def fun_BuildFinalProd(Time):
+    finalbuild1 = np.ones((6, len(Time)))
+    FinalProd = np.vstack((Time, finalbuild1))
+    PerRemoved = np.zeros((1,6))
+    return FinalProd, PerRemoved
+
+def fun_MakeLinRegression(TimeData, DataYouWantToTest, DegreeOfPoly):
+    ones = np.ones(len(TimeData))
+    A_T = ones
+    for i in range(DegreeOfPoly):
+        A_T =np.vstack((A_T, TimeData**(i+1)))
+    A = np.transpose(A_T)
+    b_line_T = DataYouWantToTest
+    b_line = np.transpose(b_line_T)
+    ATA = np.dot(A_T,A)
+    ATb_line = np.dot(A_T, b_line)
+
+    solution = np.linalg.solve(ATA, ATb_line)
+    y = 0
+    for j in range(DegreeOfPoly+1):
+        y = y + (solution[j] * TimeData**j)
+
+    return y
+
+def fun_PlottingTheLines(SplitTimeArray, SplitValueArray, k, DegreeOfPoly):
+    store = []
+    running = True
+    while running:
+        Line = fun_MakeLinRegression(SplitTimeArray[k], SplitValueArray[k], DegreeOfPoly)
+        plt.plot(SplitTimeArray[k], Line, 'r')
+        store.append(Line)
+        k = k + 1
+        if k == len(SplitTimeArray):
+            running = False
+    return store
+
+def fun_NoPlottingTheLines(SplitTimeArray, SplitValueArray, k, DegreeOfPoly):
+    store = []
+    running = True
+    while running:
+        Line = fun_MakeLinRegression(SplitTimeArray[k], SplitValueArray[k], DegreeOfPoly)
+        plt.plot(SplitTimeArray[k], Line, 'r', linewidth = 3)
+        store.append(Line)
+        k = k + 1
+        if k == len(SplitTimeArray):
+            running = False
+    return store
+
+def fun_OutlierDetermination(SplitTimeArray, SplitValueArray, StoredLines, Threshold):
+    j = 0
+    COUNTER = 0
+    RemovedValsLines = []
+    RemovedValsTimes = []
+    Cutoff = Threshold
+    running = True
+    while running:
+        DataPoints = SplitValueArray[j].copy()
+
+        RegressorLine = StoredLines[j].copy()
+
+        TimePoints = SplitTimeArray [j].copy()
+        k = 0
+        running1 = True
+        while running1:
+            Diff = DataPoints[k]-RegressorLine[k]
+            Diff = abs(Diff)
+            if Diff >= Cutoff:
+                DataPoints[k] = None
+                TimePoints[k] = None
+                COUNTER += 1
+            k = k + 1
+            if k == len(SplitValueArray[j]):
+                running1 = False
+        RemovedValsLines.append(DataPoints)
+        RemovedValsTimes.append(TimePoints)
+        j = j + 1
+        if j == len(SplitValueArray):
+            running = False
+    return RemovedValsTimes , RemovedValsLines, COUNTER
+
+
 
 
 #Plotting Data
 #give in the two things you want to plot
-#variable1 = data.Time
-#variable2 = data.Y_raw
+def fun_LinearRegressionAlgorithm(ArraySplitT, ArraySplitV, k, Thresh, NumberOfSplits, variable1, variable2, DegreeOfPoly):
+    StoredLines = fun_NoPlottingTheLines(ArraySplitT, ArraySplitV, k, DegreeOfPoly)
+    RemovedValsTimes, RemovedValsLines, COUNTER = fun_OutlierDetermination(ArraySplitT, ArraySplitV, StoredLines, Thresh)
 
-#plt.plot(variable1, variable2)
-#plt.show()
+
+    AllRemovedValsTimes = []
+    AllRemovedValsLines = []
+    for i in range(NumberOfSplits):
+        AllRemovedValsTimes = AllRemovedValsTimes + list(RemovedValsTimes[i])
+        AllRemovedValsLines = AllRemovedValsLines + list(RemovedValsLines[i])
+    AllRemovedValsLines = [i for i in AllRemovedValsLines if np.isnan(i) == False]
+    AllRemovedValsTimes = [i for i in AllRemovedValsTimes if np.isnan(i) == False]
+    TimesToZero = np.array(AllRemovedValsTimes)/0.04
+    plt.plot(AllRemovedValsTimes, AllRemovedValsLines, color = 'orange')
+    plt.xlabel('Time [s]')
+    plt.ylabel('X-Displacement [m]')
+    plt.show()
+    return COUNTER, TimesToZero
+
+def fun_NoPlotLinearRegressionAlgorithm(ArraySplitT, ArraySplitV, k, Thresh, NumberOfSplits, variable1, variable2, DegreeOfPoly):
+    StoredLines = fun_PlottingTheLines(ArraySplitT, ArraySplitV, k, DegreeOfPoly)
+    RemovedValsTimes, RemovedValsLines, COUNTER = fun_OutlierDetermination(ArraySplitT, ArraySplitV, StoredLines, Thresh)
+
+
+    AllRemovedValsTimes = []
+    AllRemovedValsLines = []
+    for i in range(NumberOfSplits):
+        AllRemovedValsTimes = AllRemovedValsTimes + list(RemovedValsTimes[i])
+        AllRemovedValsLines = AllRemovedValsLines + list(RemovedValsLines[i])
+    AllRemovedValsLines = [i for i in AllRemovedValsLines if np.isnan(i) == False]
+    AllRemovedValsTimes = [i for i in AllRemovedValsTimes if np.isnan(i) == False]
+    TimesToZero = np.array(AllRemovedValsTimes) / 0.04
+
+    #plt.plot(AllRemovedValsTimes, AllRemovedValsLines, color = 'orange')
+    #plt.show()
+    return COUNTER, TimesToZero
+
+def fun_FindThresh(variable2):
+    Abso = variable2
+    Sorted = np.sort(Abso)
+    Limit = math.ceil(0.9*len(Sorted))
+    Sort = Sorted[0:Limit]
+    Uplim = Sort[-1]
+    LowLim = Sort[0]
+    Thresh = (Uplim-LowLim)/3
+    return Thresh
+
+def fun_SplittingArrays(NumberOfSplits, variable1, variable2):
+    ArraySplitT = np.array_split(variable1, NumberOfSplits)
+    ArraySplitV = np.array_split(variable2, NumberOfSplits)
+    return ArraySplitT, ArraySplitV
+#

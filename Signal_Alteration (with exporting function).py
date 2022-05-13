@@ -1,11 +1,15 @@
 import numpy as np
 import scipy.io as sio
+import data_importer
 
 """
 SIGNAL ALTERATION
 """
 
 # Loading one of the documents
+
+
+index = data_importer.fun_Index_Gen("Data files")
 mat = sio.loadmat(f'Data files/S09_MC1_HeadMotion.mat')
 data_raw = mat.pop('motiondata')
 
@@ -78,8 +82,6 @@ def fun_alteration_row(data_raw, Change_Min=0.01):
     # print((Results[idx]))
 
     return Alterations_Row
-
-
 def fun_alteration_column(data_raw):
     data_trans = np.transpose(data_raw)
     Expected_Array = np.empty((len(data_trans), len(data_trans[0]) - 2))
@@ -191,14 +193,68 @@ def fun_alteration_column(data_raw):
 
     return Alterations_Column
 
+col_calc = input('Col Calc? (Y/N)\n').upper()
+for i in range(len(index)):
+    if i > 1:
+        mat = sio.loadmat(f'Data files/{index[i]}')
+        data_raw = mat.pop('motiondata')
 
-Alterations_Row = fun_alteration_row(data_raw, 0.01)
+        print(f'\nRow calc {i-2}/{len(index) -3}')
+        Alterations_Row = fun_alteration_row(data_raw, 250)
+        print('Row calc done')
+        if col_calc == "Y":
+            print(f'col calc {i-2}/{len(index) -3}')
+            Alterations_Column = fun_alteration_column(data_raw)
+            print('col calc done')
+        #print(Alterations_Row)
 
-print(Alterations_Row)
+        # test_array = np.array([[1, 2, 3, 4, 12, 6, 7],
+        #                        [8, 9, 10, 11, 5, 13, 14]])
+        # Alterations_Column = fun_alteration_column(test_array)
 
-# test_array = np.array([[1, 2, 3, 4, 12, 6, 7],
-#                        [8, 9, 10, 11, 5, 13, 14]])
-# Alterations_Column = fun_alteration_column(test_array)
-Alterations_Column = fun_alteration_column(data_raw)
+        #print(Alterations_Column)
 
-print(Alterations_Column)
+        """printing coord of alterations
+        col is location across data types direction (0 to 8)
+        row is location along time axis direction (0 to about 45000)
+        """
+        for j in range(2):
+            col = 0
+            row = 0
+            if j < 1:
+                if col_calc == "Y":
+                    col = np.nonzero(Alterations_Column)[0]
+                    row = np.nonzero(Alterations_Column)[1]
+            else:
+                col = np.nonzero(Alterations_Row)[0]
+                row = np.nonzero(Alterations_Row)[1]
+            coord = np.vstack((col, row)).transpose()
+            for k in range(len(coord)):
+                if coord[k][0] == 0 or coord[k][0] == 1 or coord[k][0] == 2:
+                    coord[k][0] = 999
+                if coord[k][0] == 6:
+                    coord[k][0] = 0
+                if coord[k][0] == 7:
+                    coord[k][0] = 1
+                if coord[k][0] == 8:
+                    coord[k][0] = 2
+
+            if j < 1:
+                if col_calc == "Y":
+                    with open(f'extended_data_files/data_alteration_csv/{index[i]}_{j}.csv',"w") as f:
+                        f.write("")
+                    with open (f'extended_data_files/data_alteration_csv/{index[i]}_{j}.csv', 'a') as f:
+                        f.write(f"{index[i]}\n")
+                        f.write("alteration in time (vertical)\n")
+                        for k in range(len(coord)):
+                            f.write(f'{coord[k][0]},{coord[k][1]}')
+                            f.write("\n")
+            else:
+                with open(f'extended_data_files/data_alteration_csv/{index[i]}_{j}.csv',"w") as f:
+                    f.write("")
+                with open (f'extended_data_files/data_alteration_csv/{index[i]}_{j}.csv', 'a') as f:
+                    f.write(f"{index[i]}\n")
+                    f.write("alteration in data type (horizontal)\n")
+                    for k in range(len(coord)):
+                        f.write(f'{coord[k][0]},{coord[k][1]}')
+                        f.write("\n")

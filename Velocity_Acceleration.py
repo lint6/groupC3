@@ -11,14 +11,15 @@ def rewriter_1(array_in, index_num):
     #print(array_in)
     #print(np.shape(array_in))
     if index_num < 2:
-        with open (f'csv_derive_data/{index[index_num]}_derive.csv',"w") as f:
-            f.write("")
-        with open (f'csv_derive_data/{index[index_num]}_derive.csv', 'a') as f:
-            for i in range(len(array_in[0])):
-                if i % 4 == 0:
-                    f.write(f'{array_in[1][i]},{array_in[2][i]},{array_in[3][i]},{array_in[4][i]},{array_in[5][i]},{array_in[6][i]}')
-                    #x, y, z, roll, pitch, yaw
-                    f.write("\n")
+        # with open (f'csv_derive_data/{index[index_num]}_derive.csv',"w") as f:
+        #     f.write("")
+        # with open (f'csv_derive_data/{index[index_num]}_derive.csv', 'a') as f:
+        #     for i in range(len(array_in[0])):
+        #         if i % 4 == 0:
+        #             f.write(f'{array_in[1][i]},{array_in[2][i]},{array_in[3][i]},{array_in[4][i]},{array_in[5][i]},{array_in[6][i]}')
+        #             #x, y, z, roll, pitch, yaw
+        #             f.write("\n")
+        pass
     else:
         with open (f'csv_derive_data/{index[index_num]}_derive.csv',"w") as f:
             f.write("")
@@ -27,21 +28,22 @@ def rewriter_1(array_in, index_num):
                 f.write(f'{array_in[6][i]},{array_in[7][i]},{array_in[8][i]},{array_in[3][i]},{array_in[4][i]},{array_in[5][i]}')
                 #x, y, z, roll, pitch, yaw
                 f.write("\n")
-    print('done')
+    print('vel done')
 
 def rewriter_2(array_in, index_num):
     global index
     #print(array_in)
     #print(np.shape(array_in))
     if index_num < 2:
-        with open (f'csv_derive_data/{index[index_num]}_derive_2.csv',"w") as f:
-            f.write("")
-        with open (f'csv_derive_data/{index[index_num]}_derive_2.csv', 'a') as f:
-            for i in range(len(array_in[0])):
-                if i % 4 == 0:
-                    f.write(f'{array_in[1][i]},{array_in[2][i]},{array_in[3][i]},{array_in[4][i]},{array_in[5][i]},{array_in[6][i]}')
-                    #x, y, z, roll, pitch, yaw
-                    f.write("\n")
+        # with open (f'csv_derive_data/{index[index_num]}_derive_2.csv',"w") as f:
+        #     f.write("")
+        # with open (f'csv_derive_data/{index[index_num]}_derive_2.csv', 'a') as f:
+        #     for i in range(len(array_in[0])):
+        #         if i % 4 == 0:
+        #             f.write(f'{array_in[1][i]},{array_in[2][i]},{array_in[3][i]},{array_in[4][i]},{array_in[5][i]},{array_in[6][i]}')
+        #             #x, y, z, roll, pitch, yaw
+        #             f.write("\n")
+        pass
     else:
         with open (f'csv_derive_data/{index[index_num]}_derive_2.csv',"w") as f:
             f.write("")
@@ -50,15 +52,15 @@ def rewriter_2(array_in, index_num):
                 f.write(f'{array_in[6][i]},{array_in[7][i]},{array_in[8][i]},{array_in[3][i]},{array_in[4][i]},{array_in[5][i]}')
                 #x, y, z, roll, pitch, yaw
                 f.write("\n")
-    print('done')
+    print('acc done')
 
 dt = 0.04
 index = data_importer.fun_Index_Gen("Data files")
 write = str(input("write csv? (Y/N)\n"))
 
 if write.upper() == 'Y':
-    for i in range (26):
-        print(f'\nData file{i}')
+    for i in range (len(index)):
+        print(f'\nData file {i}/{len(index)}')
         array = sio.loadmat(f'Data files/{index[i]}')
         array = array.pop('motiondata')
         array = data_importer.fun_data_format(array.transpose())
