@@ -1,15 +1,11 @@
 import numpy as np
 import scipy.io as sio
-import data_importer
 
 """
 SIGNAL ALTERATION
 """
 
 # Loading one of the documents
-
-
-index = data_importer.fun_Index_Gen("Data files")
 mat = sio.loadmat(f'Data files/S09_MC1_HeadMotion.mat')
 data_raw = mat.pop('motiondata')
 
@@ -195,40 +191,14 @@ def fun_alteration_column(data_raw):
 
     return Alterations_Column
 
-for i in range(len(index)):
-    if i > 1:
-        mat = sio.loadmat(f'Data files/{index[i]}')
-        data_raw = mat.pop('motiondata')
 
-        print(f"\n{index[i]}")
-        print(f'Row calc {i -2}/{len(index) -3}')
-        Alterations_Row = fun_alteration_row(data_raw, 250)
-        print('Row calc done')
-        print(f'col calc {i-2}/{len(index) -3}')
-        Alterations_Column = fun_alteration_column(data_raw)
-        print('col calc done')
-        #print(Alterations_Row)
+Alterations_Row = fun_alteration_row(data_raw, 0.01)
 
-        # test_array = np.array([[1, 2, 3, 4, 12, 6, 7],
-        #                        [8, 9, 10, 11, 5, 13, 14]])
-        # Alterations_Column = fun_alteration_column(test_array)
+print(Alterations_Row)
 
-        #print(Alterations_Column)
+# test_array = np.array([[1, 2, 3, 4, 12, 6, 7],
+#                        [8, 9, 10, 11, 5, 13, 14]])
+# Alterations_Column = fun_alteration_column(test_array)
+Alterations_Column = fun_alteration_column(data_raw)
 
-        """printing coord of alterations
-        col is location across data types direction (0 to 8)
-        row is location along time axis direction (0 to about 45000)
-        """
-        for i in range(2):
-            if i < 1:
-                col = np.nonzero(Alterations_Column)[0]
-                row = np.nonzero(Alterations_Column)[1]
-            else:
-                col = np.nonzero(Alterations_Row)[0]
-                row = np.nonzero(Alterations_Row)[1]
-            coord = np.vstack((col, row)).transpose()
-            if i < 1:
-                print("alteration in time")
-            else:
-                print('alteration between data type')
-            print(coord)
+print(Alterations_Column)
