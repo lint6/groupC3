@@ -93,15 +93,28 @@ def fun_MakeLinRegression(TimeData, DataYouWantToTest, DegreeOfPoly):
 
 def fun_PlottingTheLines(SplitTimeArray, SplitValueArray, k, DegreeOfPoly):
     store = []
+    ThreshStore = []
     running = True
     while running:
         Line = fun_MakeLinRegression(SplitTimeArray[k], SplitValueArray[k], DegreeOfPoly)
-        plt.plot(SplitTimeArray[k], Line, 'r')
-        store.append(Line)
+        ##########################     Thresh    ###################################
+        ArrayLine = np.array(Line)
+        DiffArray = np.sort(abs(SplitValueArray[k] - ArrayLine))
+        UQ = DiffArray[round(len(DiffArray)*0.75)]
+        LQ = DiffArray[round(len(DiffArray)*0.25)]
+        IQR = UQ-LQ
+        # print(UQ, IQR)
+        Thresh = UQ + 1.5*(IQR)
+        ThreshStore.append(Thresh)
+        #plt.plot(SplitTimeArray[k], Line, 'r', linewidth = 5)
+        store.append(list(Line))
         k = k + 1
         if k == len(SplitTimeArray):
             running = False
-    return store
+    AvThresh = sum(ThreshStore)/len(ThreshStore)
+
+    # np.savetxt('filePLR.txt', np.array(Store2))
+    return store, AvThresh
 
 def fun_NoPlottingTheLines(SplitTimeArray, SplitValueArray, k, DegreeOfPoly):
     store = []
@@ -153,8 +166,8 @@ def fun_OutlierDetermination(SplitTimeArray, SplitValueArray, StoredLines, Thres
 #Plotting Data
 #give in the two things you want to plot
 def fun_LinearRegressionAlgorithm(ArraySplitT, ArraySplitV, k, Thresh, NumberOfSplits, variable1, variable2, DegreeOfPoly):
-    StoredLines = fun_NoPlottingTheLines(ArraySplitT, ArraySplitV, k, DegreeOfPoly)
-    RemovedValsTimes, RemovedValsLines, COUNTER = fun_OutlierDetermination(ArraySplitT, ArraySplitV, StoredLines, Thresh)
+    StoredLines, AvThresh = fun_PlottingTheLines(ArraySplitT, ArraySplitV, k, DegreeOfPoly)
+    RemovedValsTimes, RemovedValsLines, COUNTER = fun_OutlierDetermination(ArraySplitT, ArraySplitV, StoredLines, AvThresh)
 
 
     AllRemovedValsTimes = []
@@ -167,13 +180,13 @@ def fun_LinearRegressionAlgorithm(ArraySplitT, ArraySplitV, k, Thresh, NumberOfS
     TimesToZero = np.array(AllRemovedValsTimes)/0.04
     plt.plot(AllRemovedValsTimes, AllRemovedValsLines, color = 'orange')
     plt.xlabel('Time [s]')
-    plt.ylabel('X-Displacement [m]')
+    plt.ylabel('Pitch [deg]')
     plt.show()
     return COUNTER, TimesToZero
 
 def fun_NoPlotLinearRegressionAlgorithm(ArraySplitT, ArraySplitV, k, Thresh, NumberOfSplits, variable1, variable2, DegreeOfPoly):
-    StoredLines = fun_PlottingTheLines(ArraySplitT, ArraySplitV, k, DegreeOfPoly)
-    RemovedValsTimes, RemovedValsLines, COUNTER = fun_OutlierDetermination(ArraySplitT, ArraySplitV, StoredLines, Thresh)
+    StoredLines, AvThresh = fun_PlottingTheLines(ArraySplitT, ArraySplitV, k, DegreeOfPoly)
+    RemovedValsTimes, RemovedValsLines, COUNTER = fun_OutlierDetermination(ArraySplitT, ArraySplitV, StoredLines, AvThresh)
 
 
     AllRemovedValsTimes = []
@@ -203,4 +216,3 @@ def fun_SplittingArrays(NumberOfSplits, variable1, variable2):
     ArraySplitT = np.array_split(variable1, NumberOfSplits)
     ArraySplitV = np.array_split(variable2, NumberOfSplits)
     return ArraySplitT, ArraySplitV
-#

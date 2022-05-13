@@ -17,7 +17,7 @@ for z in range(6):
     NumberOfSplits = 10
     DegreeOfPoly = 6
     Thresh = data_importer.fun_FindThresh(variable2)
-    plt.plot(variable1, variable2, color = 'g')
+    # plt.plot(variable1, variable2, color = 'g')
     k=0
 
     ArraySplitT, ArraySplitV = data_importer.fun_SplittingArrays(NumberOfSplits, variable1, variable2)
@@ -33,4 +33,4 @@ for z in range(6):
     PerRemoved[0][z]= (NumberOfRemovedValues/len(FormattedData[0]))*100
 
 print(OutlierMatrix)
-print(PerRemoved)
+# print(PerRemoved)

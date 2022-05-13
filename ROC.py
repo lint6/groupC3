@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io as sio
 import itertools as it
+from PLR_Final import OutlierMatrix, PerRemoved
 
 # import Signal_Alteration
 import data_not_updated
@@ -45,9 +46,8 @@ def fun_Rates(Manual, Algorithm):
 
 
 def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None):  # the optimized function for the ROC curve
-    start_time = time.time()
 
-    mat = sio.loadmat(f'Data files/S02_MC1_HeadMotion.mat')
+    mat = sio.loadmat(f'Data files/S10_MC2_HeadMotion.mat')
     data_raw = mat.pop('motiondata')
     data_raw = np.transpose(data_raw)
 
@@ -87,12 +87,17 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
     TNR = np.empty(length)
     Jaccard = np.empty(length)
     Combination_list = np.empty(length, dtype="object")
+    TPR2 = np.empty(length)
+    FPR2 = np.empty(length)
+    FNR2 = np.empty(length)
+    TNR2 = np.empty(length)
+    Jaccard2 = np.empty(length)
+    Combination_list2 = np.empty(length, dtype="object")
 
     Manual = np.transpose(np.genfromtxt("Manual_Value_Spikes_S10MC2.csv", delimiter=";"))[9]
 
     i = 0
 
-    # print("--- %s seconds ---" % (time.time() - start_time))
     for comb1, comb2, comb3 in combinations:
         if parameter2 is Dummy_List:
             Algorithm = function(data_raw, comb1)
@@ -102,6 +107,7 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
             Algorithm = function(data_raw, comb1, comb2, comb3)
 
         rates = fun_Rates(Manual, Algorithm)
+        rates2 = fun_Rates(Manual, OutlierMatrix[1,0:44998]) #compare outlier matrix to Algorithm
 
         TPR[i] = rates[0]
         FPR[i] = rates[1]
@@ -109,19 +115,27 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
         TNR[i] = rates[3]
         Jaccard[i] = rates[4]
         Combination_list[i] = [comb1, comb2, comb3]
+        TPR2[i] = rates2[0]
+        FPR2[i] = rates2[1]
+        FNR2[i] = rates2[2]
+        TNR2[i] = rates2[3]
+        Jaccard2[i] = rates2[4]
+        Combination_list2[i] = [comb1, comb2, comb3]
 
         # print(comb2, Jaccard[i], len(np.where(Algorithm == 1)[0]))
 
         i += 1
 
-    print(np.max(Jaccard))
-    print(np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)[0])
-    print(Combination_list[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)[0][0]])
+    # print(np.max(Jaccard))
+    # print(np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)[0])
+    # print(Combination_list[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)[0][0]])
     X = [0, 1]
     Y = [0, 1]
 
-    plt.scatter(FPR, TPR)
+    # plt.scatter(FPR, TPR)
     plt.plot(FPR[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)], TPR[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)], marker="o", markerfacecolor="red")
+    plt.plot(FPR2[np.where(abs(Jaccard2 - np.max(Jaccard2)) < 1e-15)],
+             TPR2[np.where(abs(Jaccard2 - np.max(Jaccard2)) < 1e-15)], marker="o", markerfacecolor="blue")
     plt.plot(X, Y)
     plt.xlim(0, 1)
     plt.ylim(0, 1)
@@ -130,10 +144,9 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
     plt.title("ROC-curve")
     plt.show()
 
-    print("--- %s seconds ---" % (time.time() - start_time))
 
 
 # fun_Rates(Manual_Test, Algorithm_Test)
-# fun_ROC_curves(Signal_Alteration.fun_alteration_row, [0, 1, 500])
+# fun_ROC_curves2(Signal_Alteration.fun_alteration_row, [0, 1, 500])
 
 fun_ROC_curves2(data_not_updated.fun_check_not_updated, [10000, 1000001, 10000], [8, 9, 1])
