@@ -1,6 +1,5 @@
 import numpy as np
 import scipy.io as sio
-#has to run after spike removal?????!!!
 """
 SIGNAL ALTERATION
 Input files are the raw data
