@@ -94,7 +94,7 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
     Jaccard2 = np.empty(length)
     Combination_list2 = np.empty(length, dtype="object")
 
-    Manual = np.transpose(np.genfromtxt("Manual_Value_Spikes_S10MC2.csv", delimiter=";"))[9]
+    Manual = np.transpose(np.genfromtxt("Manual_Value_Spikes_S10MC2.csv", delimiter=";"))
 
     i = 0
 
@@ -107,6 +107,7 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
             Algorithm = function(data_raw, comb1, comb2, comb3)
 
         rates = fun_Rates(Manual, Algorithm)
+        # rates = fun_Rates(OutlierMatrix[1, 0:44998], Algorithm)
         rates2 = fun_Rates(Manual, OutlierMatrix[1, 0:44998]) #compare outlier matrix to Algorithm
 
         TPR[i] = rates[0]
@@ -132,7 +133,7 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
     X = [0, 1]
     Y = [0, 1]
 
-    # plt.scatter(FPR, TPR)
+    plt.scatter(FPR, TPR)
     plt.plot(FPR[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)], TPR[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)], marker="o", markerfacecolor="red")
     plt.plot(FPR2[np.where(abs(Jaccard2 - np.max(Jaccard2)) < 1e-15)],
              TPR2[np.where(abs(Jaccard2 - np.max(Jaccard2)) < 1e-15)], marker="o", markerfacecolor="blue")
