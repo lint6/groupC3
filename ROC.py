@@ -107,7 +107,7 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
             Algorithm = function(data_raw, comb1, comb2, comb3)
 
         rates = fun_Rates(Manual, Algorithm)
-        rates2 = fun_Rates(Manual, OutlierMatrix[1,0:44998]) #compare outlier matrix to Algorithm
+        rates2 = fun_Rates(Manual, OutlierMatrix[1, 0:44998]) #compare outlier matrix to Algorithm
 
         TPR[i] = rates[0]
         FPR[i] = rates[1]
