@@ -1,13 +1,16 @@
 import time
 import numpy as np
+# import cupy as np
 import matplotlib.pyplot as plt
 import scipy.io as sio
 import itertools as it
 from PLR_Final import OutlierMatrix, PerRemoved
+import sys
 
 # import Signal_Alteration
 import data_not_updated
 
+# np.set_printoptions(threshold=sys.maxsize)
 Manual_Test = np.array([[1, 0, 0, 1, 1, 0],
                         [0, 0, 1, 0, 0, 0],
                         [1, 1, 0, 0, 0, 0],
@@ -105,8 +108,9 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
             Algorithm = function(data_raw[2], comb1, comb2)
         else:
             Algorithm = function(data_raw, comb1, comb2, comb3)
-
+        print(f'DEBUG: Algorithm line 110\n{Algorithm}\n')
         rates = fun_Rates(Manual, Algorithm)
+        print(f'DEBUG: rates line 112\n{rates}\n')
         rates2 = fun_Rates(Manual, OutlierMatrix[1, 0:44998]) #compare outlier matrix to Algorithm
 
         TPR[i] = rates[0]
@@ -115,27 +119,13 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
         TNR[i] = rates[3]
         Jaccard[i] = rates[4]
         Combination_list[i] = [comb1, comb2, comb3]
-        TPR2[i] = rates2[0]
-        FPR2[i] = rates2[1]
-        FNR2[i] = rates2[2]
-        TNR2[i] = rates2[3]
-        Jaccard2[i] = rates2[4]
-        Combination_list2[i] = [comb1, comb2, comb3]
-
-        # print(comb2, Jaccard[i], len(np.where(Algorithm == 1)[0]))
 
         i += 1
 
-    # print(np.max(Jaccard))
-    # print(np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)[0])
-    # print(Combination_list[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)[0][0]])
     X = [0, 1]
     Y = [0, 1]
 
-    # plt.scatter(FPR, TPR)
-    plt.plot(FPR[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)], TPR[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)], marker="o", markerfacecolor="red")
-    plt.plot(FPR2[np.where(abs(Jaccard2 - np.max(Jaccard2)) < 1e-15)],
-             TPR2[np.where(abs(Jaccard2 - np.max(Jaccard2)) < 1e-15)], marker="o", markerfacecolor="blue")
+    plt.scatter(FPR[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)], TPR[np.where(abs(Jaccard - np.max(Jaccard)) < 1e-15)], marker="o")
     plt.plot(X, Y)
     plt.xlim(0, 1)
     plt.ylim(0, 1)
@@ -144,9 +134,5 @@ def fun_ROC_curves2(function, parameter1=None, parameter2=None, parameter3=None)
     plt.title("ROC-curve")
     plt.show()
 
-
-
-# fun_Rates(Manual_Test, Algorithm_Test)
-# fun_ROC_curves2(Signal_Alteration.fun_alteration_row, [0, 1, 500])
 
 fun_ROC_curves2(data_not_updated.fun_check_not_updated, [10000, 1000001, 10000], [8, 9, 1])
